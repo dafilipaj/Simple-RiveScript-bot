@@ -1,0 +1,114 @@
++ ((@yes)|sure)
+- What would like to order from main dishes? {topic=order}
+
++ (@no)
+- Call me when you're ready.
+
++ (@no) *
+@ no
+
++ * (@no)
+@ no
+
++ * order
+@ yes
+
++ ((@yes)|sure) *
+@ yes
+
++ * ((@yes)|sure)
+@ yes
+
++ * (order|want|would like) # (@pizza)
+- Got that, <star3> <star4>. Anything else?<call>addItem <star3> <star4></call> {topic=order}
+
++ # (@pizza)
+- Got that, <star> <star2>. Anything else?<call>addItem <star> <star2></call> {topic=order}
+
++ (@pizza)
+- Got that, 1 <star>. Anything else? <call>addItem 1 <star></call> {topic=order}
+
++ (@extra)
+- Got that, 1 <star>. Anything else? <call>addItem 1 <star></call> {topic=extras}
+
++ # (@extra)
+- Got that, <star> <star2>. Anything else?<call>addItem <star> <star2></call> {topic=extras}
+
++ * (order|want) # (@extra)
+- Got that, <star3> <star4>. Anything else?<call>addItem <star3> <star4></call> {topic=extras}
+
++ (my name is|they call me) *
+- Nice to meet you <star2>!<set name=<star2>>
+
++ (goodbye|bye|good bye)
+- <call>endConversation</call>
+
+> topic order
+	+ # (@pizza)
+	- Got that, <star> <star2>. Anything else?<call>addItem <star> <star2></call>
+	
+	+ * (order|want|would like) # (@pizza)
+	- Got that, <star3> <star4>. Anything else?<call>addItem <star3> <star4></call>
+	
+	+ (@pizza)
+	- Got that, 1 <star>. Anything else?<call>addItem 1 <star></call>
+	
+	+ ((@yes)|sure)
+	- Im listening...
+	
+	+ ((@yes)|sure) *
+	@ yes
+	
+	+ ((@no)|nothing)
+	- Ok, your current order is: <call>getOrder</call>Would you like any side dish or toppings? {topic=extras}
+	
+	+ ((@no)|nothing) *
+	@ no
+	
+	+ * (topping|side dish|extra)
+	- Ok moving to <star2>. What would you want? {topic=extras}
+< topic
+
+
+
+> topic extras
+	+ # (@extra)
+	- Got that, <star> <star2>. Anything else? <call>addItem <star> <star2></call>
+	
+	+ (@extra)
+	- Got that, 1 <star>. Anything else? <call>addItem 1 <star></call>
+	
+	+ ((@yes)|sure)
+	- Im listening...
+	
+	+ ((@yes)|sure) *
+	@ yes
+	
+	+ * (pizza|(@pizza))
+	- Ok moving to main dishes. What would you want? {topic=order}
+	
+	+ ((@no)|nothing)
+	- Ok, your final order is: <call>getOrder</call>What's the delivery address? {topic=address}
+	
+	+ ((@no)|nothing) *
+	@ no
+	
+< topic
+
+
+
+> topic address
+	+ *
+	*<get name> == undefined => Thank you. Expect delivery in 30 minutes. \nWould you like anything else?
+	- Thank you <get name>. Expect delivery in 30 minutes. \nWould you like anything else?
+	
+	+ * (cancel|canceled)
+	- Your order is now canceled.
+	^ Would you like to start over?
+	
+	+ ((@yes)|sure)
+	- What would like to order from main dishes? {topic=order}
+	
+	+ (@no)
+	- <call>endConversation</call>
+< topic
